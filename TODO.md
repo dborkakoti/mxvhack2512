@@ -9,4 +9,5 @@
     [x] Add a MCP client for the policy
     [x] Evaluate
         [x] Create evaluation code
+        [ ] Finetune the prompt
 [ ] Deploy to productian
