@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MXV Chat</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="chat-container">
+        <header>
+            <h1>MXV Chat</h1>
+            <button id="clear-btn" class="secondary-btn">Clear History</button>
+        </header>
+        <div id="messages" class="messages-area">
+            <!-- Messages will appear here -->
+        </div>
+        <form id="chat-form">
+            <input type="text" id="message-input" placeholder="Type a message..." required>
+            <button type="submit">Send</button>
+        </form>
+    </div>
+    <script src="/static/script.js"></script>
+</body>
+</html>
