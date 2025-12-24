@@ -2,23 +2,36 @@ import sqlite3
 import datetime
 import pandas as pd
 import os
+import shutil
 
 DB_NAME = "mxv.db"
 DATA_FILE = "app/dataset/Sales_Data.xlsx"
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__)) # Gets /app/app
+ROOT_DIR = os.path.dirname(BASE_DIR)                  # Gets /app
+DB_SOURCE = os.path.join(ROOT_DIR, "mxv.db")          # /app/mxv.db
+DB_DEST = "/tmp/mxv.db"
+
 def init_db():
-    conn = sqlite3.connect(DB_NAME)
+    if not os.path.exists(DB_DEST):
+        if os.path.exists(DB_SOURCE):
+            shutil.copy2(DB_SOURCE, DB_DEST)
+            print(f"Database copied to {DB_DEST}")
+        else:
+            print(f"WARNING: Source database not found at {DB_SOURCE}")
+
+    conn = sqlite3.connect(DB_DEST)
     c = conn.cursor()
     
-    # Create messages table
-    c.execute('''
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            role TEXT NOT NULL,
-            content TEXT NOT NULL,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-        )
-    ''')
+    # # Create messages table
+    # c.execute('''
+    #     CREATE TABLE IF NOT EXISTS messages (
+    #         id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #         role TEXT NOT NULL,
+    #         content TEXT NOT NULL,
+    #         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+    #     )
+    # ''')
     
     # Check if sales table exists
     c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='sales'")
