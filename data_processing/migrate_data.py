@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DATABASE_URL = os.getenv("SUPABASE_DATABASE_URL")
-DATA_FILE = "app/dataset/Sales_Data.xlsx"
+DATA_FILE = "../app/dataset/Sales_Data.xlsx"
 
 if not DATABASE_URL:
     print("Error: SUPABASE_DATABASE_URL not found in .env")

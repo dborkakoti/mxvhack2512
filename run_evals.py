@@ -54,39 +54,45 @@ def run_evals():
     if not chatbot:
         print("Failed to initialize chatbot.")
         return
+    # sheets = [, "Leadership's Questions"]
+    sheets = ["Leadership's Questions", "Salespersons' Questions"]
 
     print("Loading questions...")
-    df = pd.read_excel(input_file)
     
     results = []
     
-    # Process each question
-    for index, row in df.iterrows():
-        question = row['Question (Salesperson-facing)']
-        expected = row['Correct answer']
+    for sheet in sheets:
+        print(f"sheet name: {sheet}")
+        i = 0
+        df = pd.read_excel(input_file, sheet_name=sheet)
+        # Process each question
+        for index, row in df.iterrows():
+            qcol = 'Question' if sheet == "Leadership's Questions" else 'Question (Salesperson-facing)'
+            question = row[qcol]
+            expected = row['Correct answer']
         
-        print(f"Processing Q{index+1}: {question[:50]}...")
-        
-        # Get Chatbot Response
-        try:
-            actual = chatbot.generate_response(question)
-        except Exception as e:
-            actual = f"Error: {e}"
-        
-        # Evaluate
-        metrics = evaluate_response(question, expected, actual)
-        
-        result_row = {
-            "timestamp": datetime.datetime.now().isoformat(),
-            "question": question,
-            "expected_answer": expected,
-            "actual_answer": actual,
-            "accuracy": metrics.get("accuracy", 0),
-            "precision": metrics.get("precision", 0),
-            "recall": metrics.get("recall", 0),
-            "reasoning": metrics.get("reasoning", "")
-        }
-        results.append(result_row)
+            print(f"Processing Q{index+1}: {question[:50]}...")
+            
+            # Get Chatbot Response
+            try:
+                actual = chatbot.generate_response(question)
+            except Exception as e:
+                actual = f"Error: {e}"
+            
+            # Evaluate
+            metrics = evaluate_response(question, expected, actual)
+            
+            result_row = {
+                "timestamp": datetime.datetime.now().isoformat(),
+                "question": question,
+                "expected_answer": expected,
+                "actual_answer": actual,
+                "accuracy": metrics.get("accuracy", 0),
+                "precision": metrics.get("precision", 0),
+                "recall": metrics.get("recall", 0),
+                "reasoning": metrics.get("reasoning", "")
+            }
+            results.append(result_row)
 
     # Create DataFrame and Save
     results_df = pd.DataFrame(results)
