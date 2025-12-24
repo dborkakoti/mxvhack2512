@@ -48,7 +48,7 @@ async def read_root():
 @app.post("/api/chat", dependencies=[Depends(rate_limiter)])
 async def chat(message: Message):
     # Save user message
-    database.add_message("user", message.content)
+    # database.add_message("user", message.content)
     
     # Generate response
     if chatbot:
@@ -63,7 +63,7 @@ async def chat(message: Message):
         response_content = "Chatbot not initialized. Please check API keys."
     
     # Save bot response
-    database.add_message(role, response_content)
+    # database.add_message(role, response_content)
     
     return {"role": role, "content": response_content}
 
@@ -73,5 +73,5 @@ async def get_history():
 
 @app.delete("/api/history")
 async def clear_history():
-    database.clear_messages()
+    # database.clear_messages()
     return {"message": "History cleared"}
