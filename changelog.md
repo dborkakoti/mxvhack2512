@@ -57,3 +57,12 @@ Chatbot > Okay. To best assist you, please specify what information you need for
 
 While the chatbot avoided talking about the weight of an unladen swallow, it failed to say that it didn't know about Ramesh, and didn't yet have access to the data. Please update the prompt.
 ```
+
+# Using MCP for the sales data and policies
+
+## Step A: create initial structure
+
+#### Prompt
+
+> Now we want to augment the chatbot with two MCP clients. 1. Sales data client: which uses the existing connection, and queries the sales table for information on the sales. 2. The policy client: which connects with the pinecone vector database `mxvtravel` to reply to questions around policy. 
+> For now create a outline to add these functionalities.

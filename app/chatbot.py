@@ -4,6 +4,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from app.tools.sales_client import query_sales_database
+from app.tools.policy_client import query_policy_documents
+
 class ChatBot:
     def __init__(self):
         api_key = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
@@ -11,7 +14,12 @@ class ChatBot:
             raise ValueError("GOOGLE_API_KEY or GEMINI_API_KEY not found in environment variables")
         
         genai.configure(api_key=api_key)
-        self.model = genai.GenerativeModel('gemini-2.0-flash')
+        
+        self.tools = [query_sales_database, query_policy_documents]
+        self.model = genai.GenerativeModel(
+            'gemini-2.0-flash',
+            tools=self.tools
+        )
         self.system_prompt = self._load_system_prompt()
 
     def _load_system_prompt(self):
@@ -24,19 +32,19 @@ class ChatBot:
 
     def generate_response(self, message: str, history: list = None) -> str:
         """
-        Generates a response using Gemini.
-        Args:
-            message: The user's current message.
-            history: A list of dicts with 'role' and 'content' keys.
+        Generates a response using Gemini with tool use capabilities.
         """
-        # Note: In a real app, we would format history for Gemini.
-        # For now, we are just sending the system prompt + new message as context is handled stateless here
-        # or we could construct a chat session.
+        # We start a chat session. Automatic function calling is enabled by default in recent SDKs
+        # when tools are provided in the chat.
+        chat = self.model.start_chat(enable_automatic_function_calling=True)
         
-        full_prompt = f"{self.system_prompt}\n\nUser: {message}"
+        # In a real scenario, we would repopulate chat.history from the DB history.
+        # For now, we prepend system prompt and simple context.
+        
+        full_message = f"{self.system_prompt}\n\nUser Question: {message}"
         
         try:
-            response = self.model.generate_content(full_prompt)
+            response = chat.send_message(full_message)
             return response.text
         except Exception as e:
             return f"Error generating response: {str(e)}"
