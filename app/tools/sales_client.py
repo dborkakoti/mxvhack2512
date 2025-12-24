@@ -1,6 +1,13 @@
-import pandas as pd
-from sqlalchemy import text
-from app.database import engine
+import os
+from sqlalchemy import create_engine, text
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# We use the same DB connection as the main app
+DATABASE_URL = os.getenv("SUPABASE_DATABASE_URL")
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 def query_sales_database(sql_query: str):
     """
@@ -29,19 +36,30 @@ def query_sales_database(sql_query: str):
     if not sql_query.strip().lower().startswith("select"):
         return "Error: Only SELECT queries are allowed."
 
-    if not engine:
-        return "Error: Database not connected."
+    if not DATABASE_URL:
+        return "Error: Database URL not configured."
 
     try:
+        engine = create_engine(DATABASE_URL)
         with engine.connect() as conn:
-            # using pandas for easy formatting
-            # pandas read_sql supports sqlalchemy connection/engine
-            # print(text(sql_query))
-            df = pd.read_sql(text(sql_query), conn)
-        
-        if df.empty:
-            return "No results found."
+            result = conn.execute(text(sql_query))
+            rows = result.fetchall()
+            keys = result.keys()
             
-        return df.to_markdown(index=False)
+            if not rows:
+                return "No results found."
+            
+            # Format as Markdown Table manually
+            header = "| " + " | ".join(keys) + " |"
+            separator = "| " + " | ".join(["---"] * len(keys)) + " |"
+            
+            lines = [header, separator]
+            for row in rows:
+                # Convert row values to string and escape pipes if necessary
+                row_str = "| " + " | ".join(str(val).replace("|", "&#124;") for val in row) + " |"
+                lines.append(row_str)
+                
+            return "\n".join(lines)
+
     except Exception as e:
         return f"Error executing query: {str(e)}"

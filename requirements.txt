@@ -2,8 +2,6 @@ fastapi
 uvicorn
 google-generativeai
 pinecone
-pandas
-openpyxl
 python-multipart
 python-dotenv
 requests
