@@ -5,7 +5,8 @@
 [-] Create MCP services to query the RAG agent, and the sqlite database
     [x] Use Gemini in chat end point to send a message back
     [x] Add prompt around being a "Sales Intelligence Assistant"
-    [ ] Add a MCP client for the sales data
-    [ ] Add a MCP client for the policy
-[ ] Run evals
+    [x] Add a MCP client for the sales data
+    [x] Add a MCP client for the policy
+    [x] Evaluate
+        [x] Create evaluation code
 [ ] Deploy to productian
