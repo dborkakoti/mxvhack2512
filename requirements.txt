@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+google-generativeai
+pinecone-client
+pandas
+openpyxl
+python-multipart
+python-dotenv
+requests

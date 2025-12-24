@@ -159,3 +159,9 @@ In the core app. I want a couple of changes:
 * Rate limit the app to max 2 questions per minute
 * Ensure that a visible element is shown after the question is submitted and before the answer is avvailalbe from the backend. Grey out the submit button on the chat during this period.
 ```
+
+# Vercel
+
+```md
+I want to upload the app to a server. I was thinking Vercel, but open to suggestion. How do I get it to work? Note that I have the envirnoment varaibles for GOOGLE api and pinecone api. I want to upload those too, but with an eye out for security. Should I rate limit the app
+```
