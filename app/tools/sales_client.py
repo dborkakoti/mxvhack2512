@@ -1,6 +1,6 @@
-import sqlite3
 import pandas as pd
-from app.database import DB_NAME
+from sqlalchemy import text
+from app.database import engine
 
 def query_sales_database(sql_query: str):
     """
@@ -29,11 +29,15 @@ def query_sales_database(sql_query: str):
     if not sql_query.strip().lower().startswith("select"):
         return "Error: Only SELECT queries are allowed."
 
+    if not engine:
+        return "Error: Database not connected."
+
     try:
-        conn = sqlite3.connect(DB_NAME)
-        # using pandas for easy formatting
-        df = pd.read_sql_query(sql_query, conn)
-        conn.close()
+        with engine.connect() as conn:
+            # using pandas for easy formatting
+            # pandas read_sql supports sqlalchemy connection/engine
+            # print(text(sql_query))
+            df = pd.read_sql(text(sql_query), conn)
         
         if df.empty:
             return "No results found."

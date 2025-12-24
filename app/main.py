@@ -13,7 +13,7 @@ app = FastAPI()
 # Rate limiting storage
 request_counts = defaultdict(list)
 RATE_LIMIT_DURATION = 60  # seconds
-RATE_LIMIT_REQUESTS = 2   # requests
+RATE_LIMIT_REQUESTS = 4   # requests
 
 async def rate_limiter(request: Request):
     client_ip = request.client.host

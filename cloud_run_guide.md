@@ -38,12 +38,12 @@ gcloud run deploy mxv-chatbot \
   --platform managed \
   --region us-central1 \
   --allow-unauthenticated \
-  --set-env-vars="GOOGLE_API_KEY=your_gemini_key,PINECONE_API_KEY=your_pinecone_key"
+  --set-env-vars="GOOGLE_API_KEY=your_gemini_key,PINECONE_API_KEY=your_pinecone_key,SUPABASE_DATABASE_URL=your_supabase_url"
 ```
 
 ### Step 4: Access
 The command will output a URL (e.g., `https://mxv-chatbot-205276036567.us-central1.run.app`). Open this URL to use your app.
 
 ## ⚠️ Important Notes
-- **Persistence**: Like Vercel, Cloud Run containers are ephemeral. If the service scales down to zero or restarts (which happens frequently), **chat history in `mxv.db` will be reset**. The sales data will persist because it is baked into the container image.
+- **Persistence**: Chat history is now stored in **Supabase** (PostgreSQL), so it persists across container restarts and scaling. The sales data is also queried from Supabase.
 - **Rate Limiting**: Your rate limiter works per container instance.
