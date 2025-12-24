@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('chat-form');
     const input = document.getElementById('message-input');
     const clearBtn = document.getElementById('clear-btn');
+    const loadingIndicator = document.getElementById('loading-indicator');
+    const submitBtn = form.querySelector('button[type="submit"]');
 
     // Load history
     fetch('/api/history')
@@ -20,6 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessageToUI('user', content);
         input.value = '';
 
+        // UI Feedback: Disable button and show loading
+        submitBtn.disabled = true;
+        loadingIndicator.classList.remove('hidden');
+
         // Send to API
         try {
             const res = await fetch('/api/chat', {
@@ -27,11 +33,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ content })
             });
-            const data = await res.json();
-            addMessageToUI(data.role, data.content);
+
+            if (res.status === 429) {
+                const errorData = await res.json();
+                addMessageToUI('assistant', `⚠️ ${errorData.detail}`);
+            } else {
+                const data = await res.json();
+                addMessageToUI(data.role, data.content);
+            }
         } catch (err) {
             console.error('Error:', err);
             addMessageToUI('assistant', 'Error sending message.');
+        } finally {
+            // UI Feedback: Re-enable button and hide loading
+            submitBtn.disabled = false;
+            loadingIndicator.classList.add('hidden');
         }
     });
 

@@ -1,12 +1,34 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, status, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from app import database
 from app.chatbot import get_chatbot
 import os
+import time
+from collections import defaultdict
 
 app = FastAPI()
+
+# Rate limiting storage
+request_counts = defaultdict(list)
+RATE_LIMIT_DURATION = 60  # seconds
+RATE_LIMIT_REQUESTS = 2   # requests
+
+async def rate_limiter(request: Request):
+    client_ip = request.client.host
+    current_time = time.time()
+    
+    # Filter out old requests
+    request_counts[client_ip] = [t for t in request_counts[client_ip] if current_time - t < RATE_LIMIT_DURATION]
+    
+    if len(request_counts[client_ip]) >= RATE_LIMIT_REQUESTS:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Rate limit exceeded. Maximum 2 requests per minute."
+        )
+    
+    request_counts[client_ip].append(current_time)
 
 # Initialize database
 database.init_db()
@@ -23,7 +45,7 @@ app.mount("/static", StaticFiles(directory="app/static"), name="static")
 async def read_root():
     return FileResponse("app/static/index.html")
 
-@app.post("/api/chat")
+@app.post("/api/chat", dependencies=[Depends(rate_limiter)])
 async def chat(message: Message):
     # Save user message
     database.add_message("user", message.content)

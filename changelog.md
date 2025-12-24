@@ -151,3 +151,11 @@ Strict Rules for Answering:
 
 Go through the cases of errors, and summarise the issues with them. Improve the prompt to avoid such errors.
 ```
+
+# Small fixes
+
+```md
+In the core app. I want a couple of changes:
+* Rate limit the app to max 2 questions per minute
+* Ensure that a visible element is shown after the question is submitted and before the answer is avvailalbe from the backend. Grey out the submit button on the chat during this period.
+```
